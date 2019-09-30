@@ -13,17 +13,14 @@
 
 *******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <time.h>
+#include <iostream>
 
 #include "tetris.h"
 
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 #define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
 
+// TODO: add the file handle functions again
 /*******************************************************************************
 
                                Array Definitions
@@ -423,8 +420,7 @@ void tg_init(tetris_game *obj, int rows, int cols)
   // Initialization logic
   obj->rows = rows;
   obj->cols = cols;
-  obj->board = (char*)malloc(rows * cols);
-  memset(obj->board, TC_EMPTY, rows * cols);
+  obj->board = std::string(rows * cols, TC_EMPTY);
   obj->points = 0;
   obj->level = 0;
   obj->ticks_till_gravity = GRAVITY_LEVEL[obj->level];
@@ -436,7 +432,7 @@ void tg_init(tetris_game *obj, int rows, int cols)
   obj->stored.ori = 0;
   obj->stored.loc.row = 0;
   obj->next.loc.col = obj->cols/2 - 2;
-  printf("%d", obj->falling.loc.col);
+  std::cout << obj->falling.loc.col;
 }
 
 tetris_game *tg_create(int rows, int cols)
@@ -449,7 +445,7 @@ tetris_game *tg_create(int rows, int cols)
 void tg_destroy(tetris_game *obj)
 {
   // Cleanup logic
-  free(obj->board);
+  // free(obj->board);
 }
 
 void tg_delete(tetris_game *obj) {
@@ -457,40 +453,40 @@ void tg_delete(tetris_game *obj) {
   free(obj);
 }
 
-/*
-  Load a game from a file.
- */
-tetris_game *tg_load(FILE *f)
-{
-  tetris_game *obj = (tetris_game*) malloc(sizeof(tetris_game));
-  fread(obj, sizeof(tetris_game), 1, f);
-  obj->board = (char*) malloc(obj->rows * obj->cols);
-  fread(obj->board, sizeof(char), obj->rows * obj->cols, f);
-  return obj;
-}
+// /*
+//   Load a game from a file.
+//  */
+// tetris_game *tg_load(FILE *f)
+// {
+//   tetris_game *obj = (tetris_game*) malloc(sizeof(tetris_game));
+//   fread(obj, sizeof(tetris_game), 1, f);
+//   obj->board = (char*) malloc(obj->rows * obj->cols);
+//   fread(obj->board, sizeof(char), obj->rows * obj->cols, f);
+//   return obj;
+// }
 
-/*
-  Save a game to a file.
- */
-void tg_save(tetris_game *obj, FILE *f)
-{
-  fwrite(obj, sizeof(tetris_game), 1, f);
-  fwrite(obj->board, sizeof(char), obj->rows * obj->cols, f);
-}
+// /*
+//   Save a game to a file.
+//  */
+// void tg_save(tetris_game *obj, FILE *f)
+// {
+//   fwrite(obj, sizeof(tetris_game), 1, f);
+//   fwrite(obj->board, sizeof(char), obj->rows * obj->cols, f);
+// }
 
 /*
   Print a game board to a file.  Really just for early debugging.
  */
-void tg_print(tetris_game *obj, FILE *f) {
-  int i, j;
-  for (i = 0; i < obj->rows; i++) {
-    for (j = 0; j < obj->cols; j++) {
-      if (TC_IS_EMPTY(tg_get(obj, i, j))) {
-        fputs(TC_EMPTY_STR, f);
-      } else {
-        fputs(TC_BLOCK_STR, f);
-      }
-    }
-    fputc('\n', f);
-  }
-}
+// void tg_print(tetris_game *obj, FILE *f) {
+//   int i, j;
+//   for (i = 0; i < obj->rows; i++) {
+//     for (j = 0; j < obj->cols; j++) {
+//       if (TC_IS_EMPTY(tg_get(obj, i, j))) {
+//         fputs(TC_EMPTY_STR, f);
+//       } else {
+//         fputs(TC_BLOCK_STR, f);
+//       }
+//     }
+//     fputc('\n', f);
+//   }
+// }

@@ -16,8 +16,7 @@
 #ifndef TETRIS_H
 #define TETRIS_H
 
-#include <stdio.h> // for FILE
-#include <stdbool.h> // for bool
+#include <string>
 
 /*
   Convert a tetromino type to its corresponding cell.
@@ -104,7 +103,7 @@ typedef struct {
    */
   int rows;
   int cols;
-  char *board;
+  std::string board;
   /*
     Scoring information:
    */
@@ -147,13 +146,13 @@ void tg_init(tetris_game *obj, int rows, int cols);
 tetris_game *tg_create(int rows, int cols);
 void tg_destroy(tetris_game *obj);
 void tg_delete(tetris_game *obj);
-tetris_game *tg_load(FILE *f);
-void tg_save(tetris_game *obj, FILE *f);
+// tetris_game *tg_load(FILE *f);
+// void tg_save(tetris_game *obj, FILE *f);
 
 // Public methods not related to memory:
 char tg_get(tetris_game *obj, int row, int col);
 bool tg_check(tetris_game *obj, int row, int col);
 bool tg_tick(tetris_game *obj, tetris_move move);
-void tg_print(tetris_game *obj, FILE *f);
+// void tg_print(tetris_game *obj, FILE *f);
 
 #endif // TETRIS_H
