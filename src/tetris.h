@@ -72,20 +72,22 @@ typedef enum {
   A row,column pair.  Negative numbers allowed, because we need them for
   offsets.
  */
-typedef struct {
-  int row;
-  int col;
-} tetris_location;
+class tetris_location {
+  public:
+    int row;
+    int col;
+};
 
 /*
   A "block" is a struct that contains information about a tetromino.
   Specifically, what type it is, what orientation it has, and where it is.
  */
-typedef struct {
-  int typ;
-  int ori;
-  tetris_location loc;
-} tetris_block;
+class tetris_block {
+  public:
+    int typ;
+    int ori;
+    tetris_location loc;
+};
 
 /*
   All possible moves to give as input to the game.
@@ -97,34 +99,72 @@ typedef enum {
 /*
   A game object!
  */
-typedef struct {
-  /*
-    Game board stuff:
-   */
-  int rows;
-  int cols;
-  std::string board;
-  /*
-    Scoring information:
-   */
-  int points;
-  int level;
-  /*
-    Falling block is the one currently going down.  Next block is the one that
-    will be falling after this one.  Stored is the block that you can swap out.
-   */
-  tetris_block falling;
-  tetris_block next;
-  tetris_block stored;
-  /*
-    Number of game ticks until the block will move down.
-   */
-  int ticks_till_gravity;
-  /*
-    Number of lines until you advance to the next level.
-   */
-  int lines_remaining;
-} tetris_game;
+//TODO: check if getters and setter are a good pratice in C++
+class tetris_game {
+
+  bool tg_fits (tetris_block block) const;
+  void tg_set(int row, int column, char value);
+  void tg_put(tetris_block block);
+  void tg_remove(tetris_block block);
+  void tg_move(int direction);
+  void tg_down();
+  void tg_rotate(int direction);
+  void tg_hold();
+  void tg_handle_move(tetris_move move);
+  bool tg_line_full (int i) const;
+  void tg_shift_lines(int r);
+  int tg_check_lines();
+  void tg_adjust_score(int lines_cleared);
+  bool tg_game_over();
+  static int random_tetromino(void);
+
+  public:
+    /*
+      Game board stuff:
+    */
+    int rows;
+    int cols;
+    std::string board;
+    /*
+      Scoring information:
+    */
+    int points;
+    int level;
+    /*
+      Falling block is the one currently going down.  Next block is the one that
+      will be falling after this one.  Stored is the block that you can swap out.
+    */
+    tetris_block falling;
+    tetris_block next;
+    tetris_block stored;
+    /*
+      Number of game ticks until the block will move down.
+    */
+    int ticks_till_gravity;
+    /*
+      Number of lines until you advance to the next level.
+    */
+    int lines_remaining;
+
+    tetris_game(int rows, int cols);
+    void tg_new_falling();
+    void tg_do_gravity_tick();
+    // Data structure manipulation.
+    void tg_init(int rows, int cols);
+    tetris_game *tg_create(int rows, int cols);
+    void tg_destroy();
+    void tg_delete();
+    // tetris_game *tg_load(FILE *f);
+    // void tg_save(FILE *f);
+
+    // Public methods not related to memory:
+    char tg_get(int row, int col) const;
+    bool tg_check(int row, int col) const;
+    bool tg_tick(tetris_move move);
+    // void tg_print(FILE *f);
+
+};
+
 
 /*
   This array stores all necessary information about the cells that are filled by

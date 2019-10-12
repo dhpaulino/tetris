@@ -30,6 +30,7 @@
                        waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
 #define ADD_EMPTY(w) waddch((w), ' '); waddch((w), ' ')
 
+//TODO: Remove all pointers
 /*
   Print the tetris board onto the ncurses window.
  */
@@ -40,8 +41,8 @@ void display_board(WINDOW *w, tetris_game *obj)
   for (i = 0; i < obj->rows; i++) {
     wmove(w, 1 + i, 1);
     for (j = 0; j < obj->cols; j++) {
-      if (TC_IS_FILLED(tg_get(obj, i, j))) {
-        ADD_BLOCK(w,tg_get(obj, i, j));
+      if (TC_IS_FILLED(obj->tg_get(i, j))) {
+        ADD_BLOCK(w, obj->tg_get(i, j));
       } else {
         ADD_EMPTY(w);
       }
@@ -110,7 +111,9 @@ int main()
   WINDOW *board, *next, *hold, *score;
 
   // create new game.
-  tg = tg_create(22, 10);
+  //TODO: remove the need of tetris_game
+  tetris_game tg_temp(22,10);
+  tg = &tg_temp;
   
 
   // NCURSES initialization:
@@ -130,7 +133,7 @@ int main()
 
   // Game loop
   while (running) {
-    running = tg_tick(tg, move);
+    running = tg->tg_tick(move);
     display_board(board, tg);
     display_piece(next, tg->next);
     display_piece(hold, tg->stored);
