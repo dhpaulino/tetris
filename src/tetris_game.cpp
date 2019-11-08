@@ -12,10 +12,9 @@
                 BSD License.  See LICENSE.txt for details.
 
 *******************************************************************************/
-
 #include <iostream>
 
-#include "tetris.h"
+#include "tetris_game.h"
 
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 #define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
@@ -27,56 +26,51 @@
 
 *******************************************************************************/
 
-tetris_location TETROMINOS[NUM_TETROMINOS][NUM_ORIENTATIONS][TETRIS] = {
-  // I
-  {{{1, 0}, {1, 1}, {1, 2}, {1, 3}},
-   {{0, 2}, {1, 2}, {2, 2}, {3, 2}},
-   {{3, 0}, {3, 1}, {3, 2}, {3, 3}},
-   {{0, 1}, {1, 1}, {2, 1}, {3, 1}}},
-  // J
-  {{{0, 0}, {1, 0}, {1, 1}, {1, 2}},
-   {{0, 1}, {0, 2}, {1, 1}, {2, 1}},
-   {{1, 0}, {1, 1}, {1, 2}, {2, 2}},
-   {{0, 1}, {1, 1}, {2, 0}, {2, 1}}},
-  // L
-  {{{0, 2}, {1, 0}, {1, 1}, {1, 2}},
-   {{0, 1}, {1, 1}, {2, 1}, {2, 2}},
-   {{1, 0}, {1, 1}, {1, 2}, {2, 0}},
-   {{0, 0}, {0, 1}, {1, 1}, {2, 1}}},
-  // O
-  {{{0, 1}, {0, 2}, {1, 1}, {1, 2}},
-   {{0, 1}, {0, 2}, {1, 1}, {1, 2}},
-   {{0, 1}, {0, 2}, {1, 1}, {1, 2}},
-   {{0, 1}, {0, 2}, {1, 1}, {1, 2}}},
-  // S
-  {{{0, 1}, {0, 2}, {1, 0}, {1, 1}},
-   {{0, 1}, {1, 1}, {1, 2}, {2, 2}},
-   {{1, 1}, {1, 2}, {2, 0}, {2, 1}},
-   {{0, 0}, {1, 0}, {1, 1}, {2, 1}}},
-  // T
-  {{{0, 1}, {1, 0}, {1, 1}, {1, 2}},
-   {{0, 1}, {1, 1}, {1, 2}, {2, 1}},
-   {{1, 0}, {1, 1}, {1, 2}, {2, 1}},
-   {{0, 1}, {1, 0}, {1, 1}, {2, 1}}},
-  // Z
-  {{{0, 0}, {0, 1}, {1, 1}, {1, 2}},
-   {{0, 2}, {1, 1}, {1, 2}, {2, 1}},
-   {{1, 0}, {1, 1}, {2, 1}, {2, 2}},
-   {{0, 1}, {1, 0}, {1, 1}, {2, 0}}},
-};
 
-int GRAVITY_LEVEL[MAX_LEVEL+1] = {
-// 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
-  50, 48, 46, 44, 42, 40, 38, 36, 34, 32,
-//10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-  30, 28, 26, 24, 22, 20, 16, 12,  8,  4
-};
+
+
 
 /*******************************************************************************
 
                           Helper Functions for Blocks
 
 *******************************************************************************/
+
+
+int tetris_game::get_rows() const{
+  return this->rows;
+}
+int tetris_game::get_cols() const{
+  return this->cols;
+}
+
+int tetris_game::get_points() const{
+  return this->points;
+}
+int tetris_game::get_level() const{
+  return this->level;
+}
+
+
+tetris_block tetris_game::get_falling() const{
+  return this->falling;
+}
+tetris_block tetris_game::get_next() const{
+  return this->next;
+}
+tetris_block tetris_game::get_stored() const{
+  return this->stored;
+}
+
+int tetris_game::get_ticks_till_gravity() const{
+  return this->ticks_till_gravity;
+}
+int tetris_game::get_lines_remaining() const{
+  return this->lines_remaining;
+}
+
+
+
 
 /*
    Return the block at the given row and column.
@@ -434,7 +428,7 @@ tetris_game::tetris_game(int rows, int cols){
     std::cout << falling.loc.col;
 }
 
-void tg_destroy()
+/*void tg_destroy()
 {
   // Cleanup logic
   // free(board);
@@ -444,7 +438,7 @@ void tg_delete(tetris_game *obj) {
   // tg_destroy();
   // free();
 }
-
+*/
 // /*
 //   Load a game from a file.
 //  */

@@ -16,7 +16,7 @@
 
 #include <ncurses.h>
 
-#include "tetris.h"
+#include "tetris_game.h"
 #include "util.h"
 
 /*
@@ -34,15 +34,15 @@
 /*
   Print the tetris board onto the ncurses window.
  */
-void display_board(WINDOW *w, tetris_game *obj)
+void display_board(WINDOW *w, tetris_game& tg)
 {
   int i, j;
   box(w, 0, 0);
-  for (i = 0; i < obj->rows; i++) {
+  for (i = 0; i < tg.get_rows(); i++) {
     wmove(w, 1 + i, 1);
-    for (j = 0; j < obj->cols; j++) {
-      if (TC_IS_FILLED(obj->tg_get(i, j))) {
-        ADD_BLOCK(w, obj->tg_get(i, j));
+    for (j = 0; j < tg.get_cols(); j++) {
+      if (TC_IS_FILLED(tg.tg_get(i, j))) {
+        ADD_BLOCK(w, tg.tg_get(i, j));
       } else {
         ADD_EMPTY(w);
       }
@@ -54,7 +54,7 @@ void display_board(WINDOW *w, tetris_game *obj)
 /*
   Display a tetris piece in a dedicated window.
 */
-void display_piece(WINDOW *w, tetris_block block)
+void display_piece(WINDOW* w, tetris_block block)
 {
   int b;
   tetris_location c;
@@ -75,13 +75,13 @@ void display_piece(WINDOW *w, tetris_block block)
 /*
   Display score information in a dedicated window.
  */
-void display_score(WINDOW *w, tetris_game *tg)
+void display_score(WINDOW* w, tetris_game& tg)
 {
   wclear(w);
   box(w, 0, 0);
-  wprintw(w, "Score\n%d\n", tg->points);
-  wprintw(w, "Level\n%d\n", tg->level);
-  wprintw(w, "Lines\n%d\n", tg->lines_remaining);
+  wprintw(w, "Score\n%d\n", tg.get_points());
+  wprintw(w, "Level\n%d\n", tg.get_level());
+  wprintw(w, "Lines\n%d\n", tg.get_lines_remaining());
   wnoutrefresh(w);
 }
 
@@ -105,15 +105,13 @@ void init_colors(void)
  */
 int main()
 {
-  tetris_game *tg;
   tetris_move move = TM_NONE;
   bool running = true;
   WINDOW *board, *next, *hold, *score;
 
   // create new game.
-  //TODO: remove the need of tetris_game
-  tetris_game tg_temp(22,10);
-  tg = &tg_temp;
+   tetris_game tg(22,10);
+
   
 
   // NCURSES initialization:
@@ -126,17 +124,18 @@ int main()
   init_colors();         // setup tetris colors
 
   // Create windows for each section of the interface.
-  board = newwin(tg->rows + 2, 2 * tg->cols + 2, 0, 0);
-  next  = newwin(6, 10, 0, 2 * (tg->cols + 1) + 1);
-  hold  = newwin(6, 10, 7, 2 * (tg->cols + 1) + 1);
-  score = newwin(6, 10, 14, 2 * (tg->cols + 1 ) + 1);
+  board = newwin(tg.get_rows() + 2, 2 * tg.get_cols() + 2, 0, 0);
+  next  = newwin(6, 10, 0, 2 * (tg.get_cols() + 1) + 1);
+  hold  = newwin(6, 10, 7, 2 * (tg.get_cols() + 1) + 1);
+  score = newwin(6, 10, 14, 2 * (tg.get_cols() + 1 ) + 1);
 
   // Game loop
   while (running) {
-    running = tg->tg_tick(move);
+    //TODO: make a start game method
+    running = tg.tg_tick(move);
     display_board(board, tg);
-    display_piece(next, tg->next);
-    display_piece(hold, tg->stored);
+    display_piece(next, tg.get_next());
+    display_piece(hold, tg.get_stored());
     display_score(score, tg);
     doupdate();
     sleep_milli(10);
@@ -161,7 +160,7 @@ int main()
     case 'p':
       wclear(board);
       box(board, 0, 0);
-      wmove(board, tg->rows/2, (tg->cols*COLS_PER_CELL-6)/2);
+      wmove(board, tg.get_rows()/2, (tg.get_cols()*COLS_PER_CELL-6)/2);
       wprintw(board, "PAUSED");
       wrefresh(board);
       timeout(-1);
@@ -183,9 +182,9 @@ int main()
 
   // Output ending message.
   printf("Game over!\n");
-  printf("You finished with %d points on level %d.\n", tg->points, tg->level);
+  printf("You finished with %d points on level %d.\n", tg.get_points(), tg.get_level());
 
   // Deinitialize Tetris
-  tg_delete(tg);
+ //tg_delete(tg);
   return 0;
 }

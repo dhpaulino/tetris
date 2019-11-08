@@ -1,6 +1,6 @@
 /***************************************************************************//**
 
-  @file         tetris.h
+  @file         tetris_game.h
 
   @author       Stephen Brennan
 
@@ -12,12 +12,12 @@
                 BSD License.  See LICENSE.txt for details.
 
 *******************************************************************************/
+#pragma once
 
-#ifndef TETRIS_H
-#define TETRIS_H
-
+#include "tetris_block.h"
 #include <string>
 
+//TODO:create namespace
 /*
   Convert a tetromino type to its corresponding cell.
  */
@@ -68,26 +68,7 @@ typedef enum {
   TET_I, TET_J, TET_L, TET_O, TET_S, TET_T, TET_Z
 } tetris_type;
 
-/*
-  A row,column pair.  Negative numbers allowed, because we need them for
-  offsets.
- */
-class tetris_location {
-  public:
-    int row;
-    int col;
-};
 
-/*
-  A "block" is a struct that contains information about a tetromino.
-  Specifically, what type it is, what orientation it has, and where it is.
- */
-class tetris_block {
-  public:
-    int typ;
-    int ori;
-    tetris_location loc;
-};
 
 /*
   All possible moves to give as input to the game.
@@ -99,38 +80,21 @@ typedef enum {
 /*
   A game object!
  */
-//TODO: check if getters and setter are a good pratice in C++
 class tetris_game {
 
-  bool tg_fits (tetris_block block) const;
-  void tg_set(int row, int column, char value);
-  void tg_put(tetris_block block);
-  void tg_remove(tetris_block block);
-  void tg_move(int direction);
-  void tg_down();
-  void tg_rotate(int direction);
-  void tg_hold();
-  void tg_handle_move(tetris_move move);
-  bool tg_line_full (int i) const;
-  void tg_shift_lines(int r);
-  int tg_check_lines();
-  void tg_adjust_score(int lines_cleared);
-  bool tg_game_over();
-  static int random_tetromino(void);
-
-  public:
+  private:
     /*
       Game board stuff:
     */
     int rows;
     int cols;
-    std::string board;
-    /*
+    std::string board; 
+     /*
       Scoring information:
     */
     int points;
     int level;
-    /*
+      /*
       Falling block is the one currently going down.  Next block is the one that
       will be falling after this one.  Stored is the block that you can swap out.
     */
@@ -145,6 +109,35 @@ class tetris_game {
       Number of lines until you advance to the next level.
     */
     int lines_remaining;
+
+    bool tg_fits (tetris_block block) const;
+    void tg_set(int row, int column, char value);
+    void tg_put(tetris_block block);
+    void tg_remove(tetris_block block);
+    void tg_move(int direction);
+    void tg_down();
+    void tg_rotate(int direction);
+    void tg_hold();
+    void tg_handle_move(tetris_move move);
+    bool tg_line_full (int i) const;
+    void tg_shift_lines(int r);
+    int tg_check_lines();
+    void tg_adjust_score(int lines_cleared);
+    bool tg_game_over();
+    static int random_tetromino(void);
+
+  public:
+    int get_rows() const;
+    int get_cols() const;
+    int get_points() const;
+    int get_level() const; 
+    tetris_block get_falling() const;
+    tetris_block get_next() const;
+    tetris_block get_stored() const;
+    int get_ticks_till_gravity() const;
+    int get_lines_remaining() const;
+   
+  
 
     tetris_game(int rows, int cols);
     void tg_new_falling();
@@ -173,26 +166,52 @@ class tetris_game {
   array contains 4 tetris_location objects, each mapping to an offset from a
   point on the upper left that is the tetromino "origin".
  */
-extern tetris_location TETROMINOS[NUM_TETROMINOS][NUM_ORIENTATIONS][TETRIS];
+ constexpr tetris_location TETROMINOS[NUM_TETROMINOS][NUM_ORIENTATIONS][TETRIS] = {
+  // I
+  {{{1, 0}, {1, 1}, {1, 2}, {1, 3}},
+   {{0, 2}, {1, 2}, {2, 2}, {3, 2}},
+   {{3, 0}, {3, 1}, {3, 2}, {3, 3}},
+   {{0, 1}, {1, 1}, {2, 1}, {3, 1}}},
+  // J
+  {{{0, 0}, {1, 0}, {1, 1}, {1, 2}},
+   {{0, 1}, {0, 2}, {1, 1}, {2, 1}},
+   {{1, 0}, {1, 1}, {1, 2}, {2, 2}},
+   {{0, 1}, {1, 1}, {2, 0}, {2, 1}}},
+  // L
+  {{{0, 2}, {1, 0}, {1, 1}, {1, 2}},
+   {{0, 1}, {1, 1}, {2, 1}, {2, 2}},
+   {{1, 0}, {1, 1}, {1, 2}, {2, 0}},
+   {{0, 0}, {0, 1}, {1, 1}, {2, 1}}},
+  // O
+  {{{0, 1}, {0, 2}, {1, 1}, {1, 2}},
+   {{0, 1}, {0, 2}, {1, 1}, {1, 2}},
+   {{0, 1}, {0, 2}, {1, 1}, {1, 2}},
+   {{0, 1}, {0, 2}, {1, 1}, {1, 2}}},
+  // S
+  {{{0, 1}, {0, 2}, {1, 0}, {1, 1}},
+   {{0, 1}, {1, 1}, {1, 2}, {2, 2}},
+   {{1, 1}, {1, 2}, {2, 0}, {2, 1}},
+   {{0, 0}, {1, 0}, {1, 1}, {2, 1}}},
+  // T
+  {{{0, 1}, {1, 0}, {1, 1}, {1, 2}},
+   {{0, 1}, {1, 1}, {1, 2}, {2, 1}},
+   {{1, 0}, {1, 1}, {1, 2}, {2, 1}},
+   {{0, 1}, {1, 0}, {1, 1}, {2, 1}}},
+  // Z
+  {{{0, 0}, {0, 1}, {1, 1}, {1, 2}},
+   {{0, 2}, {1, 1}, {1, 2}, {2, 1}},
+   {{1, 0}, {1, 1}, {2, 1}, {2, 2}},
+   {{0, 1}, {1, 0}, {1, 1}, {2, 0}}},
+};
 
 /*
   This array tells you how many ticks per gravity by level.  Decreases as level
   increases, to add difficulty.
  */
-extern int GRAVITY_LEVEL[MAX_LEVEL+1];
+constexpr int GRAVITY_LEVEL[MAX_LEVEL+1] = {
+// 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+  50, 48, 46, 44, 42, 40, 38, 36, 34, 32,
+//10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+  30, 28, 26, 24, 22, 20, 16, 12,  8,  4
+};
 
-// Data structure manipulation.
-void tg_init(tetris_game *obj, int rows, int cols);
-tetris_game *tg_create(int rows, int cols);
-void tg_destroy(tetris_game *obj);
-void tg_delete(tetris_game *obj);
-// tetris_game *tg_load(FILE *f);
-// void tg_save(tetris_game *obj, FILE *f);
-
-// Public methods not related to memory:
-char tg_get(tetris_game *obj, int row, int col);
-bool tg_check(tetris_game *obj, int row, int col);
-bool tg_tick(tetris_game *obj, tetris_move move);
-// void tg_print(tetris_game *obj, FILE *f);
-
-#endif // TETRIS_H
